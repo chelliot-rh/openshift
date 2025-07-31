@@ -1,4 +1,4 @@
-namespace: fbi
+namespace: ado 
 name: openshift_infrastructure_automation
 version: 7.0.11
 readme: README.md

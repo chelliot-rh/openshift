@@ -1,5 +1,5 @@
 
-# Role: fbi.openshift_infrastructure_automation.grafana_service_account
+# Role: ado.openshift_infrastructure_automation.grafana_service_account
 
 This role provisions a dedicated ServiceAccount in OpenShift for Grafana to securely access Prometheus metrics. It creates the ServiceAccount, binds it to a ClusterRole, manually creates a token Secret, and extracts the bearer token for use in Grafana. When `state: absent`, it cleanly deletes all associated resources.
 
@@ -42,7 +42,7 @@ This role provisions a dedicated ServiceAccount in OpenShift for Grafana to secu
     role_ref: cluster-monitoring-view
     state: present
   roles:
-    - role: fbi.openshift_infrastructure_automation.grafana_service_account
+    - role: ado.openshift_infrastructure_automation.grafana_service_account
 
 - name: Delete Grafana Prometheus ServiceAccount
   hosts: localhost
@@ -54,7 +54,7 @@ This role provisions a dedicated ServiceAccount in OpenShift for Grafana to secu
     role_ref: cluster-monitoring-view
     state: absent
   roles:
-    - role: fbi.openshift_infrastructure_automation.grafana_service_account
+    - role: ado.openshift_infrastructure_automation.grafana_service_account
 ```
 
 create_service_account/

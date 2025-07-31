@@ -9,7 +9,7 @@
   hosts: localhost
   gather_facts: false
   roles:
-    - role: fbi.openshift_infrastructure_automation.operatorgroup
+    - role: ado.openshift_infrastructure_automation.operatorgroup
       vars:
         example_variable: example_value
 ```

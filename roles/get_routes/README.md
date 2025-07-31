@@ -1,4 +1,4 @@
-# Role: fbi.openshift_infrastructure_automation.route_info
+# Role: ado.openshift_infrastructure_automation.route_info
 
 This role retrieves all `Route` objects from a specified OpenShift namespace. It can be used for validating route creation, collecting route hostnames, or feeding dependent tasks such as ingress validation or integration checks.
 
@@ -23,7 +23,7 @@ This role retrieves all `Route` objects from a specified OpenShift namespace. It
   vars:
     name_space: keycloak
   roles:
-    - role: fbi.openshift_infrastructure_automation.route_info
+    - role: ado.openshift_infrastructure_automation.route_info
 
 ```
 

@@ -1,4 +1,4 @@
-# Role: fbi.openshift_infrastructure_automation.rhbk
+# Role: ado.openshift_infrastructure_automation.rhbk
 
 This role deploys the Red Hat Build of Keycloak (RHBK) on OpenShift, including the PostgreSQL backend, required Kubernetes Secrets, TLS, and the Keycloak Custom Resource. It is intended to be used as part of a modular OpenShift automation workflow.
 
@@ -45,7 +45,7 @@ This role deploys the Red Hat Build of Keycloak (RHBK) on OpenShift, including t
     rhbk_db_password: postgres
     storage: synology-iscsi-storage
   roles:
-    - role: fbi.openshift_infrastructure_automation.rhbk
+    - role: ado.openshift_infrastructure_automation.rhbk
 
 ```
 

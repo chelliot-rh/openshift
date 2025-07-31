@@ -1,4 +1,4 @@
-# Role: fbi.openshift_infrastructure_automation.cert_manager_rootca
+# Role: ado.openshift_infrastructure_automation.cert_manager_rootca
 
 This role injects a Root Certificate Authority (CA) into OpenShift's cert-manager and configures it as a ClusterIssuer or namespaced Issuer. It enables cert-manager to issue certificates signed by your internal CA across the OpenShift cluster.
 
@@ -46,7 +46,7 @@ This role injects a Root Certificate Authority (CA) into OpenShift's cert-manage
     tls_crt: "{{ vault_cert }}"
     tls_key: "{{ vault_key }}"
   roles:
-    - role: fbi.openshift_infrastructure_automation.cert_manager_rootca
+    - role: ado.openshift_infrastructure_automation.cert_manager_rootca
 
 
 **Structure:**

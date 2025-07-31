@@ -9,7 +9,7 @@
   hosts: localhost
   gather_facts: false
   roles:
-    - role: fbi.openshift_infrastructure_automation.kafka
+    - role: ado.openshift_infrastructure_automation.kafka
       vars:
         example_variable: example_value
 ```

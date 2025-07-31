@@ -1,4 +1,4 @@
-# Role: fbi.openshift_infrastructure_automation.pod_wait
+# Role: ado.openshift_infrastructure_automation.pod_wait
 
 This role waits for all pods in a specified OpenShift namespace to reach a `Running` state. It is useful for ensuring workloads are fully started before continuing with dependent tasks or post-install validations.
 
@@ -25,7 +25,7 @@ This role waits for all pods in a specified OpenShift namespace to reach a `Runn
   vars:
     name_space: keycloak
   roles:
-    - role: fbi.openshift_infrastructure_automation.pod_wait
+    - role: ado.openshift_infrastructure_automation.pod_wait
 
 - name: Wait for all pods with custom retry settings
   hosts: localhost
@@ -35,7 +35,7 @@ This role waits for all pods in a specified OpenShift namespace to reach a `Runn
     pod_wait_retries: 30
     pod_wait_delay: 5
   roles:
-    - role: fbi.openshift_infrastructure_automation.pod_wait
+    - role: ado.openshift_infrastructure_automation.pod_wait
 ```
 
 **Structure:**

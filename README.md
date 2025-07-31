@@ -1,4 +1,4 @@
-# Collection: fbi.openshift_infrastructure_automation
+# Collection: ado.openshift_infrastructure_automation
 
 This Ansible collection provides modular roles to automate infrastructure setup in Red Hat OpenShift. It includes tasks for namespace creation, Operator installation, Keycloak deployment, route introspection, and workload readiness validation.
 
@@ -49,7 +49,7 @@ The collection is designed to support secure, automated platform bootstrapping i
   hosts: localhost
   gather_facts: false
   collections:
-    - fbi.openshift_infrastructure_automation
+    - ado.openshift_infrastructure_automation
 
   vars_files:
     - vault.yaml
@@ -73,11 +73,11 @@ The collection is designed to support secure, automated platform bootstrapping i
     create_rhbk_admin_user: true
 
   roles:
-    - role: fbi.openshift_infrastructure_automation.namespace
-    - role: fbi.openshift_infrastructure_automation.operatorgroup
-    - role: fbi.openshift_infrastructure_automation.subscription_operator
-    - role: fbi.openshift_infrastructure_automation.rhbk
-    - role: fbi.openshift_infrastructure_automation.get_routes
+    - role: ado.openshift_infrastructure_automation.namespace
+    - role: ado.openshift_infrastructure_automation.operatorgroup
+    - role: ado.openshift_infrastructure_automation.subscription_operator
+    - role: ado.openshift_infrastructure_automation.rhbk
+    - role: ado.openshift_infrastructure_automation.get_routes
 ```
 
 **Structure**

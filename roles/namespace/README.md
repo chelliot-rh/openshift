@@ -1,4 +1,4 @@
-# Role: fbi.openshift_infrastructure_automation.namespace
+# Role: ado.openshift_infrastructure_automation.namespace
 
 This role manages Kubernetes namespaces (projects) in an OpenShift cluster. It supports creating or deleting namespaces using the `kubernetes.core.k8s` module.
 
@@ -25,7 +25,7 @@ This role manages Kubernetes namespaces (projects) in an OpenShift cluster. It s
     name_space: keycloak
     state: present
   roles:
-    - role: fbi.openshift_infrastructure_automation.namespace
+    - role: ado.openshift_infrastructure_automation.namespace
 
 - name: Remove the Keycloak namespace
   hosts: localhost
@@ -34,7 +34,7 @@ This role manages Kubernetes namespaces (projects) in an OpenShift cluster. It s
     name_space: keycloak
     state: absent
   roles:
-    - role: fbi.openshift_infrastructure_automation.namespace
+    - role: ado.openshift_infrastructure_automation.namespace
 ```
 
 **Structure:**

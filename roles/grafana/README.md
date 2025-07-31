@@ -1,4 +1,4 @@
-# Role: fbi.openshift_infrastructure_automation.grafana
+# Role: ado.openshift_infrastructure_automation.grafana
 
 This role deploys Grafana on OpenShift using the Grafana Operator, including persistent storage and secure admin credentials. It also creates an OpenShift `Route` to expose the Grafana web UI. When `state: absent`, it cleanly deletes the Grafana custom resource and the route.
 
@@ -39,7 +39,7 @@ This role deploys Grafana on OpenShift using the Grafana Operator, including per
     storage: synology-iscsi-storage
     state: present
   roles:
-    - role: fbi.openshift_infrastructure_automation.grafana
+    - role: ado.openshift_infrastructure_automation.grafana
 
 - name: Delete Grafana using Operator
   hosts: localhost
@@ -48,7 +48,7 @@ This role deploys Grafana on OpenShift using the Grafana Operator, including per
     name_space: grafana
     state: absent
   roles:
-    - role: fbi.openshift_infrastructure_automation.grafana
+    - role: ado.openshift_infrastructure_automation.grafana
 ```
 
 **Structure:**

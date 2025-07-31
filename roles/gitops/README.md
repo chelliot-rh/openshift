@@ -7,7 +7,7 @@
   hosts: localhost
   gather_facts: false
   roles:
-    - role: fbi.openshift_infrastructure_automation.gitops
+    - role: ado.openshift_infrastructure_automation.gitops
       vars:
         example_variable: example_value
 ```
