@@ -1,0 +1,21 @@
+- name: Get Routes
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: "{{ name_space }}"
+  register: routes
+
+- name: Print all Route hostnames
+  ansible.builtin.debug:
+    msg: |
+      ✅ {{ message_title | default('Operation Status') }}
+      {{ custom_message_body | default('') }}
+
+      {% if routes.resources is defined and routes.resources | length > 0 %}
+      🌐 Routes:
+      {% for route in routes.resources %}
+      - {{ route.metadata.name }}: http{{ 's' if route.spec.tls is defined else '' }}://{{ route.spec.host }}
+      {% endfor %}
+      {% elif show_no_routes_message | default(false) %}
+      No specific routes to display.
+      {% endif %}

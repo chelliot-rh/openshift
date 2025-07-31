@@ -1,0 +1,29 @@
+- name: Create root CA secret
+  kubernetes.core.k8s:
+    namespace: "{{ name_space }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ cert_manager_root_ca_secret_name }}"
+        namespace: "{{ name_space }}"
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ tls_crt | b64encode }}"
+        tls.key: "{{ tls_key | b64encode }}"
+  when: tls_crt is defined and tls_key is defined and state == 'present'
+
+- name: Create ClusterIssuer or Issuer
+  kubernetes.core.k8s:
+    namespace: "{{ name_space if not cert_manager_root_ca_is_cluster_issuer else omit }}"
+    definition:
+      apiVersion: cert-manager.io/v1
+      kind: "{{ 'ClusterIssuer' if cert_manager_root_ca_is_cluster_issuer else 'Issuer' }}"
+      metadata:
+        name: "{{ cert_manager_root_ca_issuer_name }}"
+        namespace: "{{ name_space if not cert_manager_root_ca_is_cluster_issuer else omit }}"
+      spec:
+        ca:
+          secretName: "{{ cert_manager_root_ca_secret_name }}"
+  when: state == 'present'
+

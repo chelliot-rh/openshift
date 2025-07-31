@@ -1,0 +1,161 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-admin-creds
+  namespace: keycloak
+type: Opaque
+stringData:
+  username: {{ keycloak_admin_user | default(lookup('env', 'ADMIN_USER')) }}
+  password: {{ keycloak_admin_password | default(lookup('env', 'ADMIN_PASS')) }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-db-secret
+  namespace: keycloak
+type: Opaque
+stringData:
+  username: {{ keycloak_admin_user | default(lookup('env', 'ADMIN_USER')) }}
+  password: {{ keycloak_admin_password | default(lookup('env', 'ADMIN_PASS')) }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-tls-secret
+  namespace: keycloak
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDLzCCAhegAwIBAgIUaZ/uvH4UzAOZ3Fcw/xv/Y7BbBGAwDQYJKoZIhvcNAQEL
+    BQAwJzElMCMGA1UEAwwca2V5Y2xvYWsuYXBwcy5vY3Auc2VydmVyLmxhYjAeFw0y
+    NTA0MjcxMTIxNTdaFw0yNjA0MjcxMTIxNTdaMCcxJTAjBgNVBAMMHGtleWNsb2Fr
+    LmFwcHMub2NwLnNlcnZlci5sYWIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+    AoIBAQDAZklf43W/l0UHNIvIuXFgG4BO2eemcCLiG3iynWB8gVOF1D5mb6I6tFww
+    pCAEH6s/c/I02siAd6q65c+ivmA7hWh+P04YQ8AmlNeKfBUy9qaowAv5pIHIcQ7z
+    bzdzIjqWAsRY3urAt9W2sdwP0yURWTSNl1tLvlUx3gZa3KbyPW7Rv12KBLqV2Meu
+    U37cBxDMEJkTQ2YfdRsGTRHtI7K3BkmYDLlQED/RMSlBR7fNhbdzqy0GbDEHMtLX
+    W1uebnYylJiUFdDOJboFe3WoFmwKSRS9aQ6cz5SunLJvQCRjdqXwbIUZMyI7fgi/
+    uScBgWBPi89J2Ulwp6ounsb1vcWxAgMBAAGjUzBRMB0GA1UdDgQWBBTSCz9nIxhE
+    GRRRN705pHmhu4V1zDAfBgNVHSMEGDAWgBTSCz9nIxhEGRRRN705pHmhu4V1zDAP
+    BgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQChjylu0w8aw75zruZy
+    Ro/CYZ4tsZt62qgMpQElKBWjkfs54uNoZxcIehOfQYNN7+psYaSjDxR3bbBqiJZj
+    Zjj/WXaXJ4A6n0Qhxx/KbiReRy0JE9C+TDf7Up1ELPQUVR3DVKVKRPvsFTarXnL3
+    H+OZbd0NeCmHktXTiBRh6Y7ZF/uC/gRQmtK7PzaR3tHNPFqDknyu/XGCl4het1sn
+    FHUxULy96e3cwWvfnXhksfmx9tvP2gKHGqDjV59yALveKrzIRN8rufFrmnEUhmvc
+    zqp1/EpSKOQ9bMPFnQMZwy+lEo795T+HsY2ny7JM0twKt0o9CaFY/qhU+nx+MH/r
+    LThq
+    -----END CERTIFICATE-----
+  tls.key: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDAZklf43W/l0UH
+    NIvIuXFgG4BO2eemcCLiG3iynWB8gVOF1D5mb6I6tFwwpCAEH6s/c/I02siAd6q6
+    5c+ivmA7hWh+P04YQ8AmlNeKfBUy9qaowAv5pIHIcQ7zbzdzIjqWAsRY3urAt9W2
+    sdwP0yURWTSNl1tLvlUx3gZa3KbyPW7Rv12KBLqV2MeuU37cBxDMEJkTQ2YfdRsG
+    TRHtI7K3BkmYDLlQED/RMSlBR7fNhbdzqy0GbDEHMtLXW1uebnYylJiUFdDOJboF
+    e3WoFmwKSRS9aQ6cz5SunLJvQCRjdqXwbIUZMyI7fgi/uScBgWBPi89J2Ulwp6ou
+    nsb1vcWxAgMBAAECggEAAUIiAHgrvtopy8lkkSZiVxEy+oELFm/1EHLCzDNCjGnp
+    no5T7qZUAquHj1NheLluzKpQ1xbnuQxfT9vdKuixFy6RD4NROtAln3L5gmi7mELb
+    9e5Unbg9V47ivMWZUJ3UkYLY3yZtFV/WbFyXLnzQaR/C29q1sIYBB2OW+czn5B1v
+    Fw4BY9An9DoqgL3rmYtCdB8eNv3pqI5JgUYS/Hng9wEeSkGQOwZD7chMq+R54a7c
+    5frO74Sxk36F2dU5bmoPmUODVOBuMJvX4YanBYJgvsyQe1gJbNbXoYDGdeIx01zm
+    wSaOJEw8VTGZSUwGr2AtMhHysDY34J30anhvbi5zAQKBgQDfHz+T2fx5K+yuWgke
+    M/ySc6Cj5loWsLSBlBTFiPvsxX6btFa69CPeRQw21VuB3YENrsMD5e/Yh65QOpdC
+    bDYXoGE0nQe9rTuzUzesVbqJ+LKDPl0fJ46tgUnPUaq/hrSbDBEA9JDD7IkMDvva
+    IEB/3+vDu1GjPZjQPNiLbkDXMQKBgQDcwBq8IjsDJQQ5ouA8GHv5YIg+kpfYEwfv
+    fV8KI+GhbmHNK9e/JYAn4imab2sKBMa5PhoB9e2xmfY7LUH2UrNlnnPWZ+4ByN+U
+    jHfebYUEOw/eOWFU/cqWye+weko9CR4/t+aT1ZIW+mk9jiLFNiWVjoWvof8fUT7C
+    /qEv4z02gQKBgEzpWaIer1AZmxGSybfWlcbqAsLcwcs2iFJueCaLjMPWZElKBeeW
+    BtM0m/w+2bdPYpAT4Pd0CJRsWOMg/0kPQiosx7U6OBPjJkQveG54cr/isa5aDgGS
+    QjV+7rF/Zkt1JMaZhzb8Fvbij29PrvNG0NUDnCKxbHfH4OhPQRn3HHTRAoGBAIuV
+    bVJI0sfKQEGxm9hkIwAs6fmm+BzI69ujitT+m01YXr89Wc6kB8UwXN4qVaSgIIhB
+    nHBg8Uu77ta8Z1k6MfWvm8+XKAg43CcyKxmaZuGl9wKthb4YPGHcjpMowIiXm2ju
+    //26rgWZkbI6jgHlmx5WYHIOHSPQW78xAvsk1TABAoGALKqzKlN9vZ+e9ckLOLIi
+    4ZcpGJ1jKRXNumNBH7vcZbxWbVRjYHzc1sWZrHC3nNM/M8uXwcG44Lcwp0WA6hVj
+    3IkyrNHmzisyrh2d6PncLNDEzMSf2bLiDVU2yQRruYlBzFpObUGe0RlNvE3RM5az
+    wUcNvXZ8pKgEDzmmG1Khvn0=
+    -----END PRIVATE KEY-----
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql-db
+  namespace: keycloak
+spec:
+  serviceName: postgres-db
+  selector:
+    matchLabels:
+      app: postgresql-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgresql-db
+    spec:
+      containers:
+      - name: postgresql-db
+        image: registry.redhat.io/rhel9/postgresql-15:latest
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: data-volume
+          mountPath: /var/lib/pgsql/data
+        env:
+        - name: POSTGRESQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-db-secret
+              key: username
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-db-secret
+              key: password
+        - name: POSTGRESQL_DATABASE
+          value: keycloak
+  volumeClaimTemplates:
+  - metadata:
+      name: data-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: synology-iscsi-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+  namespace: keycloak
+spec:
+  selector:
+    app: postgresql-db
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: keycloak 
+  namespace: keycloak
+spec:
+  instances: 1
+  db:
+    vendor: postgres
+    host: postgres-db
+    usernameSecret:
+      name: keycloak-db-secret
+      key: username
+    passwordSecret:
+      name: keycloak-db-secret
+      key: password
+  http:
+    tlsSecret: keycloak-tls-secret
+  hostname:
+    hostname: {{ keycloak_hostname | default('keycloak.apps.' ~ (cluster_name | default('ocp')) ~ '.' ~ (domain | default('server.lab'))) }}
+  proxy:
+    headers: xforwarded

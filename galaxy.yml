@@ -1,0 +1,10 @@
+namespace: fbi
+name: openshift_infrastructure_automation
+version: 7.0.11
+readme: README.md
+authors:
+  - Your Name chelliot@redhat.com 
+description: Automation collection for OpenShift/kubernetes application and infrastructure deployment
+license: MIT
+dependencies: {}
+repository: http://git.server.lab/rh-lab/openshift-infrastructure_automation

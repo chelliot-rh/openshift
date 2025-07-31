@@ -1,0 +1,122 @@
+- name: Ensure GitLab namespace exists
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ name_space }}"
+
+- name: Create GitLab TLS Secret
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gitlab-tls-secret
+        namespace: "{{ name_space }}"
+      type: kubernetes.io/tls
+      stringData:
+        tls.crt: "{{ tls_crt }}"
+        tls.key: "{{ tls_key }}"
+
+- name: Create GitLab Root Password Secret
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gitlab-root-password-secret
+        namespace: "{{ name_space }}"
+      type: Opaque
+      stringData:
+        password: "{{ gitlab_root_password }}"
+  no_log: true
+
+- name: Create GitLab DB Secret
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gitlab-db-secret
+        namespace: "{{ name_space }}"
+      type: Opaque
+      stringData:
+        POSTGRESQL_USER: "{{ gitlab_admin_user }}"
+        POSTGRESQL_PASSWORD: "{{ gitlab_admin_password }}"
+  no_log: true
+
+- name: Install GitLab Operator Group
+  include_role:
+    name: fbi.openshift_infrastructure_automation.operatorgroup
+
+- name: Install GitLab Subscription Operator
+  include_role:
+    name: fbi.openshift_infrastructure_automation.subscription_operator
+
+- name: Wait for GitLab Operator to be ready
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    namespace: "{{ name_space }}"
+    name: gitlab-controller-manager
+  register: gitlab_op
+  until: >
+    gitlab_op.resources | default([]) | length > 0
+    and gitlab_op.resources[0].status is defined
+    and gitlab_op.resources[0].status.availableReplicas is defined
+    and gitlab_op.resources[0].status.availableReplicas | int > 0
+  retries: 30
+  delay: 10
+
+- name: Deploy GitLab Custom Resource
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: apps.gitlab.com/v1beta1
+      kind: GitLab
+      metadata:
+        name: gitlab
+        namespace: "{{ name_space }}"
+      spec:
+        chart:
+          version: "9.1.0"
+        certmanager:
+          install: false
+        gitlab:
+          password:
+            valueFrom:
+              secretKeyRef:
+                name: gitlab-root-password-secret
+                key: password
+        router:
+          tls:
+            secretName: gitlab-tls-secret
+          hostname: "{{ gitlab_hostname }}"
+        postgresql:
+          enabled: false
+          host: gitlab-postgresql
+          username:
+            valueFrom:
+              secretKeyRef:
+                name: gitlab-db-secret
+                key: POSTGRESQL_USER
+          password:
+            valueFrom:
+              secretKeyRef:
+                name: gitlab-db-secret
+                key: POSTGRESQL_PASSWORD
+          database: gitlabhq_production
+        persistence:
+          enabled: true
+          storage:
+            size: "{{ gitlab_storage_size }}"
+            class: "{{ storage }}"
+
+- name: Wait for all GitLab pods to be Running
+  include_role:
+    name: fbi.openshift_infrastructure_automation.wait_for_pods_running
+
+- name: Get GitLab Routes
+  include_role:
+    name: fbi.openshift_infrastructure_automation.get_routes

@@ -1,0 +1,20 @@
+- name: Create Operator subscription
+  kubernetes.core.k8s:
+    state: "{{ state }}"
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        name: "{{ operator_name }}"
+        namespace: "{{ name_space }}"
+      spec:
+        channel: "{{ operator_channel }}"
+        name: "{{ operator_name }}"
+        source: "{{ operator_source }}"
+        sourceNamespace: "{{ operator_source_namespace }}"
+        installPlanApproval: Automatic
+
+
+
+
+

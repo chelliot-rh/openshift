@@ -1,0 +1,40 @@
+- name: Generate full CRD YAML content
+  ansible.builtin.set_fact:
+    crd_manifest: |
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: {{ name_space }}
+        labels:
+          openshift.io/cluster-monitoring: 'true'
+      ---
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: {{ operatorgroup }}
+        namespace: {{ name_space }}
+      spec:
+        targetNamespaces:
+          - {{ name_space }}
+      ---
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        name: {{ operator_name }}
+        namespace: {{ name_space }}
+      spec:
+        channel: {{ operator_channel }}
+        name: {{ operator_name }}
+        source: {{ operator_source }}
+        sourceNamespace: {{ operator_source_namespace }}
+        installPlanApproval: Automatic
+      ---
+
+- name: Render CRD YAML block
+  ansible.builtin.debug:
+    msg: "{{ crd_manifest | from_yaml | to_nice_yaml(indent=2) }}"
+
+
+- name: Print CRD to screen (for copy/download in AAP)
+  ansible.builtin.debug:
+    msg: "{{ crd_manifest }}"

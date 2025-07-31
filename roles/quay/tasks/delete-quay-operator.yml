@@ -1,0 +1,12 @@
+- name: Delete Quay namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ name_space }}"
+    state: absent
+  register: delete_namespace
+  failed_when: >
+    delete_namespace.failed and (
+      'NotFound' not in (delete_namespace | to_json)
+      and 'not found' not in (delete_namespace | to_json)
+    )

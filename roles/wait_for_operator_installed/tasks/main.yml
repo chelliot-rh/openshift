@@ -1,0 +1,30 @@
+#- name: Wait for Operator to be installed (via ClusterServiceVersion)
+  hosts: localhost
+  gather_facts: false
+  vars:
+      operator_namespace: my-operator-namespace
+    operator_name_substring: my-operator
+    operator_install_timeout: 30  # seconds
+    operator_poll_interval: 10     # seconds
+
+  tasks:
+    - name: Wait for operator CSV to appear
+      vars:
+        start_time: "{{ ansible_date_time.epoch | int }}"
+      until: operator_csvs.resources | selectattr('metadata.name', 'search', operator_name_substring) | list | length > 0
+      retries: "{{ (operator_install_timeout // operator_poll_interval) | int }}"
+      delay: "{{ operator_poll_interval }}"
+      register: operator_csvs
+      kubernetes.core.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: ClusterServiceVersion
+        namespace: "{{ operator_namespace }}"
+
+    - name: Set fact if Operator is installed
+      set_fact:
+        operator_installed: true
+
+    - name: Debug operator installation status
+      debug:
+        msg: "✅ Operator '{{ operator_name_substring }}' is installed in '{{ operator_namespace }}'."
+

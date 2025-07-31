@@ -1,0 +1,50 @@
+- name: Wait for Dev Spaces CSV to reach 'Succeeded'
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: "{{ name_space }}"
+  register: csvs
+  retries: 15
+  delay: 10
+  until: >
+    csvs.resources | selectattr('metadata.name', 'search', 'devspacesoperator') |
+    selectattr('status.phase', 'equalto', 'Succeeded') | list | length > 0
+
+- name: Deploy CheCluster to enable DevSpaces
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: org.eclipse.che/v2
+      kind: CheCluster
+      metadata:
+        name: devspaces
+        namespace: "{{ name_space }}"
+      spec:
+        server:
+          cheImageTag: "3.20.0"  # Use the specific version tag
+          dashboardImage: "quay.io/eclipse/che-dashboard:3.20.0"  # Use the specific version tag
+          devfileRegistryUrl: "https://che-devfile-registry.openshift.io"
+          pluginsRegistryUrl: "https://che-plugin-registry.openshift.io"
+
+- name: Wait for CheCluster to report Active phase
+  block:
+    - name: Fetch CheCluster status
+      kubernetes.core.k8s_info:
+        api_version: org.eclipse.che/v2
+        kind: CheCluster
+        name: devspaces
+        namespace: "{{ name_space }}"
+      register: checluster
+      retries: 30
+      delay: 10
+      until: >
+        checluster.resources | length > 0 and
+        (checluster.resources[0].status.chePhase is defined and checluster.resources[0].status.chePhase == "Active")
+  rescue:
+    - name: Fallback - Check CheCluster status manually
+      shell: |
+        oc get checluster devspaces -n {{ name_space }} -o jsonpath='{.status.chePhase}'
+      register: che_phase
+      until: che_phase.stdout == "Active"
+      retries: 30
+      delay: 10

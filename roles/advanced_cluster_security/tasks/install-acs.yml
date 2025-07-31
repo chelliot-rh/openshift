@@ -1,0 +1,98 @@
+- name: Create central admin password secret
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ name_space }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: central-htpasswd
+      type: Opaque
+      stringData:
+        password: "{{ acs_admin_password }}"
+
+- name: Deploy RHACS Central
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: platform.stackrox.io/v1alpha1
+      kind: Central
+      metadata:
+        name: central
+        namespace: "{{ name_space }}"
+      spec:
+        central:
+          adminPasswordSecret:
+            name: central-htpasswd
+        persistence:
+          persistentVolumeClaim:
+            claimName: central-pvc
+        exposure:
+          loadBalancer:
+            enabled: false
+        scanner:
+          analyzer:
+            scaling:
+              autoScaling: "Disabled"   # Must be a string, not boolean
+              replicas: 1
+
+- name: Wait for Central pods to be ready
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: "{{ name_space }}"
+    label_selectors:
+      - app=central
+  register: central_pods
+  until: >
+    central_pods.resources
+    | selectattr('status.containerStatuses', 'defined')
+    | selectattr('status.containerStatuses', '!=', [])
+    | selectattr('status.containerStatuses.0.ready', 'equalto', true)
+    | list
+    | length > 0
+  retries: 30
+  delay: 10
+
+- name: Create Route for Central service
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ name_space }}"
+    definition:
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        name: central
+      spec:
+        to:
+          kind: Service
+          name: central
+        port:
+          targetPort: https  # <<< IMPORTANT: must match the port "name" in the service
+        tls:
+          termination: passthrough
+        wildcardPolicy: None
+
+- name: Get Central route hostname
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    name: central
+    namespace: "{{ name_space }}"
+  register: central_route
+
+- name: Get admin password for RHACS
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: central-htpasswd
+    namespace: "{{ name_space }}"
+  register: rhacs_secret
+
+- name: Show RHACS admin password
+  debug:
+    msg: >-
+      RHACS Login: https://{{ central_route.resources[0].spec.host }}
+      Username: admin
+      Password: {{ rhacs_secret.resources[0].data.password | b64decode }}
+

@@ -1,0 +1,91 @@
+- name: Deploy Grafana instance using Operator
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: grafana.integreatly.org/v1beta1
+      kind: Grafana
+      metadata:
+        name: grafana
+        namespace: "{{ name_space }}"
+      spec:
+        ingress:
+          enabled: true
+        config:
+          log:
+            mode: console
+            level: warn
+          auth:
+            disable_login_form: "false"
+          security:
+            admin_user: "{{ grafana_admin_user }}"
+            admin_password: "{{ grafana_admin_password }}"
+        persistence:
+          enabled: true
+          size: "{{ storage_size }}"
+          storageClassName: "{{ storage }}"
+
+- name: Create Route to expose Grafana
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        name: grafana
+        namespace: "{{ name_space }}"
+      spec:
+        host: "{{ grafana_hostname }}"
+        to:
+          kind: Service
+          name: grafana-service
+        port:
+          targetPort: 3000
+        tls:
+          termination: edge
+
+- name: Create ServiceAccount for Grafana
+  kubernetes.core.k8s:
+    namespace: openshift-monitoring
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: grafana-prometheus-sa
+
+- name: Bind ServiceAccount to Prometheus Role
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: grafana-prometheus-sa-binding
+      subjects:
+        - kind: ServiceAccount
+          name: grafana-prometheus-sa
+          namespace: openshift-monitoring
+      roleRef:
+        kind: ClusterRole
+        name: cluster-monitoring-view
+        apiGroup: rbac.authorization.k8s.io
+
+- name: Create ServiceAccount token secret
+  kubernetes.core.k8s:
+    namespace: openshift-monitoring
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: grafana-prometheus-sa-token
+        annotations:
+          kubernetes.io/service-account.name: grafana-prometheus-sa
+      type: kubernetes.io/service-account-token
+
+- name: Get token from secret
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: openshift-monitoring
+    name: grafana-prometheus-sa-token
+  register: grafana_sa_secret
+
+- name: Set bearer token fact
+  ansible.builtin.set_fact:
+    prometheus_bearer_token: "{{ grafana_sa_secret.resources[0].data.token | b64decode }}"

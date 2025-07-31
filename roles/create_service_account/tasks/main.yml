@@ -1,0 +1,7 @@
+- name: Create Service Account
+  ansible.builtin.import_tasks: create_service_account.yml
+  when: service_account_state == "present"
+
+- name: Delete Service Account
+  ansible.builtin.import_tasks: delete_service_account.yml
+  when: service_account_state == "absent"

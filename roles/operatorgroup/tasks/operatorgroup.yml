@@ -1,0 +1,43 @@
+- name: Create OperatorGroup (AllNamespaces mode)
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: "{{ operatorgroup }}"
+        namespace: "{{ name_space }}"
+      spec: {}
+  when:
+    - state == "present"
+    - all_namespaces_install | default(false) | bool
+
+- name: Create OperatorGroup (SingleNamespace mode)
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: "{{ operatorgroup }}"
+        namespace: "{{ name_space }}"
+      spec:
+        targetNamespaces:
+          - "{{ name_space }}"
+  when:
+    - state == "present"
+    - not all_namespaces_install | default(false) | bool
+
+- name: Delete OperatorGroup
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: "{{ operatorgroup }}"
+        namespace: "{{ name_space }}"
+      spec:
+        targetNamespaces:
+          - "{{ name_space }}"
+  when: state == "absent"

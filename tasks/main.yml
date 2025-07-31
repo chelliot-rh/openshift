@@ -1,0 +1,32 @@
+---
+- name: Deploy Red Hat build of keycloak
+  hosts: localhost
+  gather_facts: false
+  # collections: fbi:openshift_infrastructure_automation
+  # vars_files:
+  #   - vault.yaml
+  vars:
+    # namespace vars
+    keycloak_namespace: keycloak
+    state: present
+    # operator OperatorGroup
+    operator_name: rhbk-operator
+    # rhbk vars
+    storage: lvms-vgocplvm
+    rhbk_channel: stable-v26.0
+    rhbk_source: redhat-operators
+    rhbk_source_namespace: openshift-marketplace
+    rhbk_action: Install
+    keycloak_hostname: keycloak.apps.server.lab
+    install_rhbk_operator: true
+    create_rhbk_admin_user: true
+
+#  tasks:
+#    - name: Run the namespace role from fbi.openshift_infrastructure_automation
+#      ansible.builtin.include_role:
+#        name: fbi.openshift_infrastructure_automation.namespace
+
+  roles:
+    - namespace
+  #   - fbi.openshift_infrastructure_automation.operatorgroup
+  #   - fbi.openshift_infrastructure_automation.rhbk

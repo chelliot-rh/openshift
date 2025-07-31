@@ -1,0 +1,13 @@
+- name: Create Keycloak admin credentials secret
+  redhat.openshift.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: keycloak-admin-creds
+        namespace: keycloak
+      type: Opaque
+      stringData:
+        username: "{{ keycloak_admin_user }}"
+        password: "{{ keycloak_admin_password }}"
